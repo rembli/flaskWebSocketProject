@@ -1,0 +1,11 @@
+Flask
+Flask_SocketIO
+gevent
+gevent-websocket
+python-socketio[client]
+numpy
+opencv_python
+Pillow
+colour
+
+

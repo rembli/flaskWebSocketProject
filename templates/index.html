@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                let namespace = "/imagestream";
+                let video = document.querySelector("#videoElement");
+                let canvas = document.querySelector("#canvasElement");
+                let ctx = canvas.getContext('2d');
+            
+                var localMediaStream = null;
+                var constraints = {
+                video: {
+                    width: { min: 640 },
+                    height: { min: 480 }
+                }
+                };
+
+                console.log ("Trying to connect ...")
+                var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+                socket.on('connect', function() {
+                    console.log('Connected!');
+                });
+            
+                function sendSnapshot() {
+                    if (!localMediaStream) {
+                        return;
+                    }
+                
+                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, 300, 150);
+                
+                    let dataURL = canvas.toDataURL('image/jpeg');
+                    socket.emit('input image', dataURL);
+                }    
+
+                navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+                    video.srcObject = stream;
+                    localMediaStream = stream;
+                
+                    setInterval(function () {
+                        sendSnapshot();
+                    }, 100);
+                    }).catch(function(error) {
+                        console.log(error);
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <h1>FlaskWebSocketProject</h1>
+
+        Your camera:<br>
+        <video autoplay="true" id="videoElement" style="width:640px;height:480px"></video>
+        <p>
+
+        Snapshot of your camera sent to server:<br>
+        <canvas id="canvasElement" style="width:640px;height:480px"></canvas>
+        <p>
+
+        Modified image back from server with http streaming:<br>
+        <img id="imageElement" src="{{ url_for('video') }}" style="width:640px;height:480px">
+    </body>
+</html>
+ 

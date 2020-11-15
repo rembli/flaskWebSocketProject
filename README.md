@@ -10,3 +10,5 @@ https://github.com/dxue2012/python-webcam-flask/blob/master/README.md
 
 The original tutorial from Miguel Grinberg
 https://blog.miguelgrinberg.com/post/easy-websockets-with-flask-and-gevent 
+
+This code was the basis for the implementation at http://www.kunstkam.de
